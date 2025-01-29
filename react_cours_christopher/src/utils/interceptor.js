@@ -1,37 +1,33 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const myAxios = axios.create({
-  baseURL: 'https://api.example.com',
-    timeout: 1000,
+    baseURL: 'http://reactnativeaws-env.eba-5bsvutew.eu-north-1.elasticbeanstalk.com',
     headers: {
         'Content-Type': 'application/json',
-    }
+    },
 });
 
+// ✅ Ajouter automatiquement le token aux requêtes
 myAxios.interceptors.request.use(
-  (config) => {
-    // Add any request interceptors here
-    // For example, adding an Authorization header
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
+    (config) => {
+        const token = Cookies.get('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
 );
 
 myAxios.interceptors.response.use(
-  (response) => {
-    // Add any response interceptors here
-    return response;
-  },
-  (error) => {
-    // Handle any response errors here
-    return Promise.reject(error);
-  }
+    (response) => response,
+    (error) => {
+        if (error.response && error.response.status === 401) {
+            Cookies.remove('token');
+        }
+        return Promise.reject(error);
+    }
 );
 
 export default myAxios;

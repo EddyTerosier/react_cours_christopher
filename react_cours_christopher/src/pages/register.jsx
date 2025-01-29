@@ -1,78 +1,53 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { register } from '../redux/slices/authSlice.js';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const auth = useSelector((state) => state.auth);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add form submission logic here
-    console.log('Form submitted', formData);
+    await dispatch(register({ email, password }));
   };
+
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      navigate('/login');
+    }
+  }, [auth.isAuthenticated, navigate]);
 
   return (
-    <div className="register-page">
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="username">Username:</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
+      <div className="register-page">
+        <h2>Register</h2>
+        <p>Create your account below.</p>
+        <form onSubmit={handleSubmit}>
           <label htmlFor="email">Email:</label>
           <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
           />
-        </div>
-        <div>
           <label htmlFor="password">Password:</label>
           <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
           />
-        </div>
-        <div>
-          <label htmlFor="confirmPassword">Confirm Password:</label>
-          <input
-            type="password"
-            id="confirmPassword"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <button type="submit">Register</button>
-      </form>
-    </div>
+          <button type="submit" disabled={auth.status === 'loading'}>
+            {auth.status === 'loading' ? 'Inscription en cours...' : 'Register'}
+          </button>
+          {auth.status === 'failed' && <p>{auth.error?.message || JSON.stringify(auth.error)}</p>}
+        </form>
+      </div>
   );
 };
 
