@@ -5,9 +5,9 @@ export const fetchPosts = createAsyncThunk(
     'forum/fetchPosts',
     async (_, { getState, rejectWithValue }) => {
       try {
-        const state = getState();
+        const state = getState().forum || {}; // ✅ Vérification si forum existe
         const response = await MyAxios.get('/posts', {
-          params: { lastTimestamp: state.forum.lastTimestamp },
+          params: { lastTimestamp: state.lastTimestamp },
         });
         return response.data;
       } catch (error) {
@@ -39,11 +39,11 @@ const forumSlice = createSlice({
         })
         .addCase(fetchPosts.fulfilled, (state, action) => {
           state.loading = false;
-          if (action.payload.length === 0) {
+          if (Array.isArray(action.payload) && action.payload.length === 0) {
             state.hasMore = false;
           } else {
-            state.posts = [...state.posts, ...action.payload];
-            state.lastTimestamp = action.payload[action.payload.length - 1].timestamp;
+            state.posts = [...state.posts, ...(action.payload || [])];
+            state.lastTimestamp = action.payload?.[action.payload.length - 1]?.timestamp || null;
           }
         })
         .addCase(fetchPosts.rejected, (state, action) => {

@@ -1,36 +1,35 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchPosts } from '../redux/slices/forumSlice.js';
 
 const InfiniteScroll = () => {
     const dispatch = useDispatch();
     const { posts, hasMore, loading } = useSelector((state) => state.forum);
+    const observerRef = useRef(null);
 
-    const loadMore = useCallback(() => {
-        if (hasMore && !loading) {
+    useEffect(() => {
+        if (posts.length === 0) {
             dispatch(fetchPosts());
         }
-    }, [hasMore, loading, dispatch]);
+    }, [dispatch, posts.length]);
 
     useEffect(() => {
-        loadMore();
-    }, [loadMore]);
+        observerRef.current = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && hasMore && !loading) {
+                dispatch(fetchPosts());
+            }
+        });
 
-    useEffect(() => {
-        const handleScroll = () => {
-            if (
-                window.innerHeight + document.documentElement.scrollTop >=
-                document.documentElement.offsetHeight - 100
-            ) {
-                loadMore();
+        if (observerRef.current && document.getElementById('load-more-trigger')) {
+            observerRef.current.observe(document.getElementById('load-more-trigger'));
+        }
+
+        return () => {
+            if (observerRef.current) {
+                observerRef.current.disconnect();
             }
         };
-
-        window.addEventListener('scroll', handleScroll);
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
-    }, [loadMore]);
+    }, [dispatch, hasMore, loading]);
 
     return (
         <div>
@@ -41,6 +40,7 @@ const InfiniteScroll = () => {
                 ))}
             </ul>
             {loading && <p>Loading...</p>}
+            <div id="load-more-trigger" style={{ height: '10px' }}></div>
         </div>
     );
 };

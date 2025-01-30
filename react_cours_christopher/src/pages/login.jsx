@@ -22,30 +22,20 @@ const Login = () => {
   }, [auth.isAuthenticated, auth.status, navigate]);
 
   return (
-      <div className="login-page">
-        <h2>Login</h2>
-        <p>Welcome to the login page!</p>
+      <div className="container">
+        <h2 className="mb-4">Login</h2>
         <form onSubmit={handleSubmit}>
-          <label htmlFor="email">Email:</label>
-          <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-          />
-          <label htmlFor="password">Password:</label>
-          <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-          />
-          <button type="submit" disabled={auth.status === 'loading'}>
+          <div className="mb-3">
+            <label className="form-label">Email:</label>
+            <input className="form-control" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Password:</label>
+            <input className="form-control" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          </div>
+          <button className="btn btn-primary w-100" type="submit" disabled={auth.status === 'loading'}>
             {auth.status === 'loading' ? 'Connexion en cours...' : 'Login'}
           </button>
-          {auth.status === 'failed' && <p>{auth.error?.message || JSON.stringify(auth.error)}</p>}
         </form>
       </div>
   );

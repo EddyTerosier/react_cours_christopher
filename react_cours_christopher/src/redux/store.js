@@ -5,7 +5,7 @@ import forumReducer from './slices/forumSlice';
 const store = configureStore({
   reducer: {
     auth: authReducer,
-    // forum: forumReducer,
+    forum: forumReducer,
   },
 });
 
