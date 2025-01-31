@@ -1,0 +1,29 @@
+.tindor-navbar {
+    background-color: var(--pale-dogwood);
+}
+
+/* Pour changer la couleur de l'icône hamburger de Bootstrap */
+.navbar-toggler {
+    border: none;
+    color: var(--white);
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' ..." );
+    /* Utilise un SVG blanc ou redéfinis-le selon ta charte */
+}
+
+.tindor-brand {
+    color: var(--white) !important;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.nav-link {
+    color: var(--white) !important;
+    margin-left: 1rem;
+}
+
+.nav-link:hover {
+    color: var(--snow) !important;
+}

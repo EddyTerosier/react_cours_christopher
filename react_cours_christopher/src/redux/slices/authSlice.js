@@ -13,7 +13,7 @@ export const login = createAsyncThunk(
             return response.data;
         } catch (error) {
             console.error(error);
-            return rejectWithValue(error.response?.data || "Une erreur est survenue");
+            return rejectWithValue(error.response?.error || "Une erreur est survenue");
         }
     }
 );
@@ -28,8 +28,19 @@ export const register = createAsyncThunk(
             }
             return response.data;
         } catch (error) {
-            console.error(error);
-            return rejectWithValue(error.response?.data || "Une erreur est survenue");
+            return rejectWithValue(error.response?.data?.error || "Une erreur est survenue");
+        }
+    }
+);
+
+export const getMe = createAsyncThunk(
+    "auth/getMe",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await MyAxios.get("/me");
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.error || "Erreur /me");
         }
     }
 );
@@ -39,13 +50,13 @@ const authSlice = createSlice({
     initialState: {
         status: 'idle',
         user: null,
-        isAuthenticated: !!Cookies.get('token'), // Vérifie si un token est présent au chargement
+        isAuthenticated: !!Cookies.get('token'),
         token: Cookies.get('token') || null,
         error: null,
     },
     reducers: {
         logout: (state) => {
-            Cookies.remove('token'); // Supprime le token lors de la déconnexion
+            Cookies.remove('token');
             state.user = null;
             state.token = null;
             state.isAuthenticated = false;
@@ -82,6 +93,21 @@ const authSlice = createSlice({
             .addCase(register.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.payload || "Erreur inconnue";
+            })
+            .addCase(getMe.pending, (state) => {
+                    state.status = "loading";
+                })
+            .addCase(getMe.fulfilled, (state, action) => {
+                state.status = "succeeded";
+                state.user = action.payload;
+                state.isAuthenticated = true;
+            })
+            .addCase(getMe.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload || "Erreur getMe";
+                state.user = null;
+                state.isAuthenticated = false;
+                Cookies.remove("token");
             });
     },
 });

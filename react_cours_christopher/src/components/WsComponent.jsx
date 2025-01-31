@@ -4,27 +4,21 @@ const Message = () => {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [ws, setWs] = useState(null);
+    const [users, setUsers] = useState([]);
+    const [selectedUser, setSelectedUser] = useState(null);
 
     useEffect(() => {
         const socket = new WebSocket('ws://localhost:8080');
         setWs(socket);
 
         socket.onopen = () => {
-            console.log('WebSocket connection established.');
+            console.log('WebSocket connexion établie.');
+            socket.send(JSON.stringify({ type: 'getUsers' }));
             socket.send(JSON.stringify({ type: 'connect', data: 'user' }));
         };
 
-        socket.onmessage = (event) => {
-            try {
-                const newMessage = JSON.parse(event.data);
-                setMessages((prevMessages) => [...prevMessages, newMessage]);
-            } catch (error) {
-                console.error("Received non-JSON message:", event.data);
-            }
-        };
-
         socket.onclose = () => {
-            console.log('WebSocket connection closed.');
+            console.log('WebSocket connexion fermer.');
         }
 
         return () => {
@@ -35,6 +29,14 @@ const Message = () => {
     const sendMessage = () => {
         if (ws && input) {
             ws.send(JSON.stringify({ type: 'message', message: input }));
+            ws.onmessage = (event) => {
+                try {
+                    const newMessage = JSON.parse(event.data);
+                    setMessages((prevMessages) => [...prevMessages, newMessage]);
+                } catch (error) {
+                    console.error("Non-JSON message reçu:", event.data);
+                }
+            };
             setInput('');
         }
     };

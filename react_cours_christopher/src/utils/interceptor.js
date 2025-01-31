@@ -3,13 +3,12 @@ import Cookies from 'js-cookie';
 
 const myAxios = axios.create({
     // baseURL: 'http://reactnativeaws-env.eba-5bsvutew.eu-north-1.elasticbeanstalk.com',
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://localhost:4000',
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
-// ✅ Ajouter automatiquement le token aux requêtes
 myAxios.interceptors.request.use(
     (config) => {
         const token = Cookies.get('token');
