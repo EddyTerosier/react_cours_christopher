@@ -13,13 +13,8 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     await dispatch(register({ email, password }));
+    navigate('/login');
   };
-
-  useEffect(() => {
-    if (auth.isAuthenticated && auth.status === 'succeeded') {
-      navigate('/login');
-    }
-  }, [auth.isAuthenticated, navigate]);
 
   return (
       <div className="container">

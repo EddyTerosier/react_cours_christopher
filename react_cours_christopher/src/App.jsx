@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getMe } from "./redux/slices/authSlice";
+
 import ChatBox from "./pages/ChatBox";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -7,6 +10,15 @@ import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
+    const dispatch = useDispatch();
+    const { token, user } = useSelector((state) => state.auth);
+
+    useEffect(() => {
+        if (token && !user) {
+            dispatch(getMe());
+        }
+    }, [token, user, dispatch]);
+
     return (
         <Router>
             <Routes>

@@ -9,7 +9,6 @@ const myAxios = axios.create({
     },
 });
 
-// ✅ Ajouter automatiquement le token aux requêtes
 myAxios.interceptors.request.use(
     (config) => {
         const token = Cookies.get('token');

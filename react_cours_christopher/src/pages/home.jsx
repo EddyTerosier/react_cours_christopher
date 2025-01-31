@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../redux/slices/authSlice';
-import WsComponent from "../components/WsComponent.jsx";
 
 const Home = () => {
     const auth = useSelector((state) => state.auth);
@@ -19,13 +18,10 @@ const Home = () => {
                 <ul className="list-unstyled d-flex justify-content-center gap-3">
                     {!auth.token && <li><Link className="btn btn-primary" to="/login">Login</Link></li>}
                     {!auth.token && <li><Link className="btn btn-secondary" to="/register">Register</Link></li>}
-                    <li><Link className="btn btn-info" to="/scroll">Scroll</Link></li>
+                    <li><Link className="btn btn-info" to="/chat">Chat</Link></li>
                     {auth.token && <li><button className="btn btn-danger" onClick={handleLogout}>Logout</button></li>}
                 </ul>
             </nav>
-            <div>
-                <WsComponent />
-            </div>
         </div>
     );
 };

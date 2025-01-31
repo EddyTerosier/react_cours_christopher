@@ -33,6 +33,18 @@ export const register = createAsyncThunk(
     }
 );
 
+export const getMe = createAsyncThunk(
+    "auth/getMe",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await MyAxios.get("/me");
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.error || "Erreur /me");
+        }
+    }
+);
+
 const authSlice = createSlice({
     name: 'auth',
     initialState: {
@@ -81,6 +93,21 @@ const authSlice = createSlice({
             .addCase(register.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.payload || "Erreur inconnue";
+            })
+            .addCase(getMe.pending, (state) => {
+                    state.status = "loading";
+                })
+            .addCase(getMe.fulfilled, (state, action) => {
+                state.status = "succeeded";
+                state.user = action.payload;
+                state.isAuthenticated = true;
+            })
+            .addCase(getMe.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload || "Erreur getMe";
+                state.user = null;
+                state.isAuthenticated = false;
+                Cookies.remove("token");
             });
     },
 });
