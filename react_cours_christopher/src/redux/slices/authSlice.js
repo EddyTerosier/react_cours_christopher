@@ -13,7 +13,7 @@ export const login = createAsyncThunk(
             return response.data;
         } catch (error) {
             console.error(error);
-            return rejectWithValue(error.response?.data || "Une erreur est survenue");
+            return rejectWithValue(error.response?.error || "Une erreur est survenue");
         }
     }
 );
@@ -28,8 +28,7 @@ export const register = createAsyncThunk(
             }
             return response.data;
         } catch (error) {
-            console.error(error);
-            return rejectWithValue(error.response?.data || "Une erreur est survenue");
+            return rejectWithValue(error.response?.data?.error || "Une erreur est survenue");
         }
     }
 );
@@ -39,13 +38,13 @@ const authSlice = createSlice({
     initialState: {
         status: 'idle',
         user: null,
-        isAuthenticated: !!Cookies.get('token'), // Vérifie si un token est présent au chargement
+        isAuthenticated: !!Cookies.get('token'),
         token: Cookies.get('token') || null,
         error: null,
     },
     reducers: {
         logout: (state) => {
-            Cookies.remove('token'); // Supprime le token lors de la déconnexion
+            Cookies.remove('token');
             state.user = null;
             state.token = null;
             state.isAuthenticated = false;

@@ -1,26 +1,23 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import store from './redux/store';
-import Login from './pages/login';
-import Register from './pages/register';
-import Home from "./pages/home.jsx";
-import { Provider } from "react-redux";
-import ProtectedRoute from "./pages/protectedRoute.jsx";
-import Scroll from "./pages/scroll.jsx";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import ChatBox from "./pages/ChatBox";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
-const App = () => {
+function App() {
     return (
-        <Provider store={store}>
-            <Router>
-                <Routes className="App">
+        <Router>
+                <Routes>
                     <Route path="/" element={<Home />} />
+
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
-                    <Route path="/scroll" element={<ProtectedRoute><Scroll /></ProtectedRoute>} />
+
+                    <Route path="/chat" element={<ChatBox />} />
                 </Routes>
-            </Router>
-        </Provider>
+        </Router>
     );
-};
+}
 
 export default App;

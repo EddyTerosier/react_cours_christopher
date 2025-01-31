@@ -37,6 +37,7 @@ const Login = () => {
             {auth.status === 'loading' ? 'Connexion en cours...' : 'Login'}
           </button>
         </form>
+        {auth.status === "failed" && (  <p>{auth.error?.message || JSON.stringify(auth.error)}</p>)}
       </div>
   );
 };

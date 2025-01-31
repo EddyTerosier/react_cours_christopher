@@ -16,7 +16,7 @@ const Register = () => {
   };
 
   useEffect(() => {
-    if (auth.isAuthenticated) {
+    if (auth.isAuthenticated && auth.status === 'succeeded') {
       navigate('/login');
     }
   }, [auth.isAuthenticated, navigate]);
@@ -31,12 +31,13 @@ const Register = () => {
           </div>
           <div className="mb-3">
             <label className="form-label">Password:</label>
-            <input className="form-control" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <input className="form-control" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
           <button className="btn btn-success w-100" type="submit" disabled={auth.status === 'loading'}>
             {auth.status === 'loading' ? 'Inscription en cours...' : 'Register'}
           </button>
         </form>
+        {auth.status === "failed" && (  <p>{auth.error?.message || JSON.stringify(auth.error)}</p>)}
       </div>
   );
 };
