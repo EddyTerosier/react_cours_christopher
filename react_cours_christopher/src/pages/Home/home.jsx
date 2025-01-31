@@ -1,12 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
 import "./Home.css";
 import axios from "axios";
 
 const Home = () => {
-  const auth = useSelector((state) => state.auth);
-  const dispatch = useDispatch();
-
   const [users, setUsers] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [animation, setAnimation] = useState("");
@@ -37,7 +33,7 @@ const Home = () => {
   if (!users.length || currentIndex >= users.length) {
     return (
       <div className="home-container">
-        <h2>Aucun profil à afficher</h2>
+        <h2>No profile</h2>
       </div>
     );
   }

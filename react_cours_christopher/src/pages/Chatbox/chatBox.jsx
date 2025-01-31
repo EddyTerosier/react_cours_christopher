@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { useSelector } from "react-redux";
 import "./ChatBox.css";
 
 const socket = io("http://localhost:4000");
@@ -8,10 +8,13 @@ const socket = io("http://localhost:4000");
 const ChatBox = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [userId, setUserId] = useState(null);
-  const [email, setEmail] = useState("");
   const [receiverId, setReceiverId] = useState("");
   const [users, setUsers] = useState([]);
+
+  const auth = useSelector((state) => state.auth);
+  const userId = auth?.user?._id;
+  const email = auth?.user?.email;
+
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -24,7 +27,7 @@ const ChatBox = () => {
 
   const sendMessage = (e) => {
     e?.preventDefault();
-    if (input.trim() && receiverId) {
+    if (input.trim() && receiverId && userId) {
       const message = { sender: userId, receiver: receiverId, text: input };
       socket.emit("sendMessage", message);
       setInput("");
@@ -32,24 +35,12 @@ const ChatBox = () => {
   };
 
   useEffect(() => {
-    let storedEmail = sessionStorage.getItem("email");
-    if (!storedEmail) {
-      storedEmail = prompt("Entrez votre email:");
-      if (storedEmail) {
-        sessionStorage.setItem("email", storedEmail);
-      } else {
-        return;
-      }
-    }
-    setEmail(storedEmail);
-    socket.emit("registerUser", storedEmail);
+    if (!userId || !email) return;
+
+    socket.emit("registerUser", email);
 
     socket.on("userRegistered", ({ userId }) => {
-      setUserId(userId);
-      fetch("http://localhost:4000/users")
-        .then((res) => res.json())
-        .then((data) => setUsers(data))
-        .catch((err) => console.error("Erreur chargement utilisateurs:", err));
+      console.log("User re-registered with Socket ID, userId:", userId);
     });
 
     socket.on("usersList", (usersList) => {
@@ -65,7 +56,7 @@ const ChatBox = () => {
       socket.off("userRegistered");
       socket.off("usersList");
     };
-  }, []);
+  }, [userId, email]);
 
   const selectReceiver = (id) => {
     setReceiverId(id);
@@ -75,23 +66,12 @@ const ChatBox = () => {
       .catch((err) => console.error("Erreur chargement des messages:", err));
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("email");
-    window.location.reload();
-  };
-
   return (
     <div className="chat-container">
       {/* Sidebar */}
       <div className="chat-sidebar">
         <div className="chat-sidebar-header">
           <div className="fw-bold">{email}</div>
-          <button
-            onClick={handleLogout}
-            className="btn btn-outline-secondary btn-sm"
-          >
-            Déconnexion
-          </button>
         </div>
         <div className="overflow-auto">
           {users.map(
@@ -153,18 +133,18 @@ const ChatBox = () => {
                 <input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Écrire un message..."
+                  placeholder="Send a message..."
                   className="form-control"
                 />
                 <button type="submit" className="btn px-4 btn-send">
-                  Envoyer
+                  Send
                 </button>
               </form>
             </div>
           </>
         ) : (
           <div className="flex-grow-1 d-flex align-items-center justify-content-center text-muted">
-            Sélectionnez un utilisateur pour commencer une conversation
+            Select a user to start chatting
           </div>
         )}
       </div>

@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { register } from "../../redux/slices/authSlice.js";
 import { Link, useNavigate } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "./Register.css";
-import Login from "../Login/login.jsx";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -16,13 +14,14 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     await dispatch(register({ email, password }));
+    navigate("/login");
   };
 
-  useEffect(() => {
-    if (auth.isAuthenticated && auth.status === "succeeded") {
-      navigate("/login");
-    }
-  }, [auth.isAuthenticated, auth.status, navigate]);
+  // useEffect(() => {
+  //   if (auth.isAuthenticated && auth.status === "succeeded") {
+  //     navigate("/login");
+  //   }
+  // }, [auth.isAuthenticated, auth.status, navigate]);
 
   return (
     <div className="register-container">
