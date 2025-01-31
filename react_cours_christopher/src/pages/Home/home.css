@@ -1,0 +1,79 @@
+.home-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--white);
+}
+
+.user-card {
+    width: 300px;
+    height: 400px;
+    background-color: var(--snow);
+    border: 1px solid var(--pale-dogwood);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* Permet d’appliquer l’animation */
+    transition: transform 0.5s, opacity 0.5s;
+}
+
+.user-card.slide-left {
+    animation: slide-left 0.5s forwards;
+}
+
+.user-card.slide-right {
+    animation: slide-right 0.5s forwards;
+}
+
+@keyframes slide-left {
+    to {
+        transform: translateX(-400px) rotate(-15deg);
+        opacity: 0;
+    }
+}
+
+@keyframes slide-right {
+    to {
+        transform: translateX(400px) rotate(15deg);
+        opacity: 0;
+    }
+}
+
+.buttons {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.like-button,
+.dislike-button {
+    border: none;
+    outline: none;
+    padding: 0.6rem 1.2rem;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.dislike-button {
+    background-color: var(--champagne-pink);
+    color: #000;
+}
+
+.dislike-button:hover {
+    background-color: var(--pale-dogwood-2);
+    color: var(--white);
+}
+
+.like-button {
+    background-color: var(--pale-dogwood);
+    color: var(--white);
+}
+
+.like-button:hover {
+    background-color: var(--pale-dogwood-2);
+}
