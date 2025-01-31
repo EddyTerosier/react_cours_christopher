@@ -2,8 +2,8 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const myAxios = axios.create({
-    baseURL: 'http://reactnativeaws-env.eba-5bsvutew.eu-north-1.elasticbeanstalk.com',
-    // baseURL: 'http://localhost:3000',
+    // baseURL: 'http://reactnativeaws-env.eba-5bsvutew.eu-north-1.elasticbeanstalk.com',
+    baseURL: 'http://localhost:4000',
     headers: {
         'Content-Type': 'application/json',
     },
