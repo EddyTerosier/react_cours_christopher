@@ -1,0 +1,65 @@
+.register-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--white);
+}
+
+.register-card {
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid var(--pale-dogwood);
+    border-radius: 8px;
+    padding: 2rem;
+    background-color: var(--snow);
+}
+
+.register-title {
+    color: var(--pale-dogwood);
+    text-align: center;
+}
+
+.register-subtitle {
+    color: var(--pale-dogwood-2);
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.register-button {
+    background-color: var(--pale-dogwood);
+    border: none;
+    width: 100%;
+    padding: 0.6rem;
+    color: var(--white);
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.register-button:hover {
+    background-color: var(--pale-dogwood-2);
+}
+
+.error-message {
+    margin-top: 1rem;
+    color: red;
+    text-align: center;
+}
+
+.register-login-link {
+    text-align: center;
+    color: var(--pale-dogwood-2);
+    margin-top: 1rem;
+}
+
+.register-login-link {
+    text-align: center;
+    color: var(--pale-dogwood-2);
+    margin-top: 1rem;
+}
+
+.unstyled-link {
+    text-decoration: none;
+    color: var(--pale-dogwood);
+}
