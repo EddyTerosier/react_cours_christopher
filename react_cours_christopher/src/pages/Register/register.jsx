@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { register } from "../../redux/slices/authSlice.js";
 import { Link, useNavigate } from "react-router-dom";
@@ -16,12 +16,6 @@ const Register = () => {
     await dispatch(register({ email, password }));
     navigate("/login");
   };
-
-  // useEffect(() => {
-  //   if (auth.isAuthenticated && auth.status === "succeeded") {
-  //     navigate("/login");
-  //   }
-  // }, [auth.isAuthenticated, auth.status, navigate]);
 
   return (
     <div className="register-container">

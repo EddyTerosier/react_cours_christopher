@@ -1,11 +1,12 @@
-import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './slices/authSlice';
-import forumReducer from './slices/forumSlice';
+// store.js
+import { configureStore } from "@reduxjs/toolkit";
+import authReducer from "./slices/authSlice";
+import matchesReducer from "./slices/matchesSlice";
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
-    forum: forumReducer,
+    matches: matchesReducer,
   },
 });
 

@@ -1,20 +1,23 @@
 import { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchMatches } from "../../redux/slices/matchesSlice";
+import { getMessagesBetween } from "../../services/apiService";
 import "./ChatBox.css";
 
-const socket = io("http://localhost:4000");
+const socket = io(import.meta.env.VITE_API_URL);
 
 const ChatBox = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [receiverId, setReceiverId] = useState("");
-  const [users, setUsers] = useState([]);
+  const dispatch = useDispatch();
 
-  const auth = useSelector((state) => state.auth);
-  const userId = auth?.user?._id;
-  const email = auth?.user?.email;
+  const { user } = useSelector((state) => state.auth);
+  const userId = user?._id;
+  const email = user?.email;
 
+  const { matches, status, error } = useSelector((state) => state.matches);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -26,7 +29,7 @@ const ChatBox = () => {
   }, [messages]);
 
   const sendMessage = (e) => {
-    e?.preventDefault();
+    e.preventDefault();
     if (input.trim() && receiverId && userId) {
       const message = { sender: userId, receiver: receiverId, text: input };
       socket.emit("sendMessage", message);
@@ -36,71 +39,64 @@ const ChatBox = () => {
 
   useEffect(() => {
     if (!userId || !email) return;
-
     socket.emit("registerUser", email);
-
     socket.on("userRegistered", ({ userId }) => {
-      console.log("User re-registered with Socket ID, userId:", userId);
+      console.log("User re-registered with Socket ID:", userId);
     });
-
-    socket.on("usersList", (usersList) => {
-      setUsers(usersList);
-    });
-
     socket.on("receiveMessage", (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
+      setMessages((prev) => [...prev, message]);
     });
-
+    dispatch(fetchMatches());
     return () => {
       socket.off("receiveMessage");
       socket.off("userRegistered");
-      socket.off("usersList");
     };
-  }, [userId, email]);
+  }, [userId, email, dispatch]);
+
+  const matchedUsers = matches
+    .map((match) => match.users.find((u) => u._id !== userId))
+    .filter(Boolean);
 
   const selectReceiver = (id) => {
     setReceiverId(id);
-    fetch(`http://localhost:4000/messages/${userId}/${id}`)
-      .then((res) => res.json())
-      .then((data) => setMessages(data))
+    getMessagesBetween(userId, id)
+      .then((res) => setMessages(res.data))
       .catch((err) => console.error("Erreur chargement des messages:", err));
   };
 
   return (
     <div className="chat-container">
-      {/* Sidebar */}
       <div className="chat-sidebar">
         <div className="chat-sidebar-header">
           <div className="fw-bold">{email}</div>
         </div>
         <div className="overflow-auto">
-          {users.map(
-            (user) =>
-              user._id !== userId && (
-                <div
-                  key={user._id}
-                  onClick={() => selectReceiver(user._id)}
-                  className={`chat-sidebar-user ${
-                    receiverId === user._id ? "active" : ""
-                  }`}
-                >
-                  {user.email}
-                </div>
-              ),
+          {status === "loading" && <p>Chargement des matchs...</p>}
+          {error && <p>{error}</p>}
+          {matchedUsers.length === 0 && status === "succeeded" && (
+            <p>Aucun match pour le moment</p>
           )}
+          {matchedUsers.map((matchedUser) => (
+            <div
+              key={matchedUser._id}
+              onClick={() => selectReceiver(matchedUser._id)}
+              className={`chat-sidebar-user ${
+                receiverId === matchedUser._id ? "active" : ""
+              }`}
+            >
+              {matchedUser.email}
+            </div>
+          ))}
         </div>
       </div>
-
-      {/* Main chat */}
       <div className="chat-main">
         {receiverId ? (
           <>
             <div className="chat-header">
               <h5 className="mb-0">
-                {users.find((u) => u._id === receiverId)?.email}
+                {matchedUsers.find((u) => u._id === receiverId)?.email}
               </h5>
             </div>
-
             <div className="chat-messages">
               {messages.map((msg, index) => (
                 <div
@@ -127,7 +123,6 @@ const ChatBox = () => {
               ))}
               <div ref={messagesEndRef} />
             </div>
-
             <div className="chat-footer">
               <form onSubmit={sendMessage} className="d-flex gap-2">
                 <input
@@ -144,7 +139,7 @@ const ChatBox = () => {
           </>
         ) : (
           <div className="flex-grow-1 d-flex align-items-center justify-content-center text-muted">
-            Select a user to start chatting
+            Sélectionnez un match pour discuter
           </div>
         )}
       </div>
